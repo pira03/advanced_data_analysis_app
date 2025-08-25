@@ -126,6 +126,7 @@ class MainAgent:
         self.example_selector = SemanticSimilarityExampleSelector.from_examples(
             examples=few_shots,           # your list of few-shot examples
             embeddings=self.embeddings,
+            input_keys=["input"],
             k=3,
             vectorstore_cls=FAISS         # optional
         )
