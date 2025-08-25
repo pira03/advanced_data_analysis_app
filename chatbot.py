@@ -122,7 +122,7 @@ class MainAgent:
             doc = Document(page_content=text, metadata=example)
             documents.append(doc)
 
-        self.vectorstore = FAISS.from_documents(documents, embedding=self.embeddings, persist_directory=None)
+        self.vectorstore = FAISS.from_documents(documents, embedding=self.embeddings)
         self.example_selector = SemanticSimilarityExampleSelector.from_examples(
             vectorstore=self.vectorstore,
             k=3
