@@ -12,6 +12,7 @@ import pandas as pd
 import math
 import traceback
 from langchain_core.prompts import FewShotPromptTemplate, PromptTemplate
+
 load_dotenv()
 key= os.getenv("OPENAI_API_KEY")
 

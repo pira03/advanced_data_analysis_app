@@ -30,6 +30,26 @@ few_shots = [
         "input": "Show summary of Salary column",
         "output": "print(df['Salary'].describe())"
     },
+    {
+        "input": "convert 'col_name' to integer",
+        "output": "df['col_name'] = df['col_name'].astype(int)"
+    },
+    {
+        "input": "convert 'col_name' to float",
+        "output": "df['col_name'] = df['col_name'].astype(float)"
+    },
+    {
+        "input": "convert 'col_name' to string",
+        "output": "df['col_name'] = df['col_name'].astype(str)"
+    },
+    {
+        "input": "convert 'col_name' to datetime",
+        "output": "df['col_name'] = pd.to_datetime(df['col_name'], errors='coerce')"
+    }, 
+    {
+        "input": "Show summary of Salary column",
+        "output": "print(df['Salary'].describe())"
+    },
    {
         "input": "calculate the salary based on the gender and age of the employee",
         "output": "df = decide_salary(df, 'Gender', 'AgeCategory')"
