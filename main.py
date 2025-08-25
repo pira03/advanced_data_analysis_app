@@ -57,7 +57,7 @@ if "df" in st.session_state:
 
     if st.button("Run") and user_input.strip():
         config = {"configurable": {"thread_id": str(uuid.uuid4())}}
-        relevant_few_shots = main_agent.example_selector.select_examples(user_input)
+        relevant_few_shots = main_agent.example_selector.select_examples({"input": user_input})
 
             # 📌 Show retrieved examples before running the LLM
         if relevant_few_shots:
