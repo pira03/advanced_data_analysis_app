@@ -71,55 +71,62 @@ if "df" in st.session_state:
             *[HumanMessage(e['input']) for e in relevant_few_shots],
             HumanMessage(user_input)
         ]
-
-        ai_response = main_agent.graph_agent.invoke({"messages": messages})
-        generated_code = ai_response['messages'][-1].content
-        st.code(generated_code, language="python")
-
-        # Safe execution namespace
-        exec_namespace = {"df": st.session_state.get("df", None),
-                          "salinity_calculator": salinity_calculator,
-                          "processed_mode": processed_mode,
-                          "pd": pd,
-                          "math": math
-                          }
-
-        output_buffer = io.StringIO()
-        sys_stdout = sys.stdout
-        sys.stdout = output_buffer
-
         try:
-            exec(generated_code, exec_namespace)
+            ai_response = main_agent.graph_agent.invoke(messages)
+            generated_code = ai_response['messages'][-1].content
+            st.code(generated_code, language="python")
+
+            # Safe execution namespace
+            exec_namespace = {"df": st.session_state.get("df", None),
+                            "salinity_calculator": salinity_calculator,
+                            "processed_mode": processed_mode,
+                            "pd": pd,
+                            "math": math
+                            }
+
+            output_buffer = io.StringIO()
+            sys_stdout = sys.stdout
+            sys.stdout = output_buffer
+
+            try:
+                exec(generated_code, exec_namespace)
+            except Exception as e:
+                st.error(f"❌ Error executing code: {str(e)}")
+                st.error(traceback.format_exc())
+
+            # Restore stdout
+            sys.stdout = sys_stdout
+
+            # Get captured output
+            captured_output = output_buffer.getvalue().strip()
+
+        # Display captured output in a readable way
+            if captured_output:
+                st.subheader("Output")
+                # For multi-line output, st.text or st.code
+                st.code(captured_output)
+
+
+            # Update session state
+            if "df" in exec_namespace:
+                st.session_state.df = exec_namespace["df"]
+
+            # Display DataFrame
+            if "df" in exec_namespace and exec_namespace["df"] is not None:
+                st.subheader("DataFrame preview")
+                st.dataframe(exec_namespace["df"].head(10))
+
+            # Display Plotly figure
+            if "fig" in exec_namespace:
+                st.subheader("Plot")
+                st.plotly_chart(exec_namespace["fig"], use_container_width=True)
+
         except Exception as e:
-            st.error(f"❌ Error executing code: {str(e)}")
-            st.error(traceback.format_exc())
-
-        # Restore stdout
-        sys.stdout = sys_stdout
-
-        # Get captured output
-        captured_output = output_buffer.getvalue().strip()
-
-    # Display captured output in a readable way
-        if captured_output:
-            st.subheader("Output")
-            # For multi-line output, st.text or st.code
-            st.code(captured_output)
-
-
-        # Update session state
-        if "df" in exec_namespace:
-            st.session_state.df = exec_namespace["df"]
-
-        # Display DataFrame
-        if "df" in exec_namespace and exec_namespace["df"] is not None:
-            st.subheader("DataFrame preview")
-            st.dataframe(exec_namespace["df"].head(10))
-
-        # Display Plotly figure
-        if "fig" in exec_namespace:
-            st.subheader("Plot")
-            st.plotly_chart(exec_namespace["fig"], use_container_width=True)
+            sys.stdout = sys.__stdout__  # Restore stdout in case of error
+            st.error("❌ Error during agent execution!")
+            st.error(f"**Exception:** {str(e)}")
+            st.error("**Traceback:**")
+            st.text(traceback.format_exc())
 
 
 
