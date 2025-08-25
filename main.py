@@ -58,6 +58,14 @@ if "df" in st.session_state:
     if st.button("Run") and user_input.strip():
         config = {"configurable": {"thread_id": str(uuid.uuid4())}}
         relevant_few_shots = main_agent.example_selector.select_examples({"input": user_input})
+
+            # 📌 Show retrieved examples before running the LLM
+        if relevant_few_shots:
+            st.subheader("📌 Retrieved Few-Shot Examples")
+            for ex in relevant_few_shots:
+                st.write(f"**Q:** {ex['input']}")
+                st.code(ex['output'], language="python")
+
         messages = [
             SystemMessage(system_prompt),
             *[HumanMessage(e['input']) for e in relevant_few_shots],
