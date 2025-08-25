@@ -17,7 +17,6 @@ import uuid
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.prompts.example_selector import SemanticSimilarityExampleSelector
-from langchain_core.prompts import FewShotPromptTemplate
 from langchain.docstore.document import Document   
 from prompt import few_shots
 
@@ -130,6 +129,7 @@ class MainAgent:
             k=3,
             vectorstore_cls=FAISS         # optional
         )
+        
 
         # build state graph
         graph_agent = StateGraph(AgentState)

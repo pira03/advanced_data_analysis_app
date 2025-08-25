@@ -11,7 +11,7 @@ import sys
 import pandas as pd
 import math
 import traceback
-
+from langchain_core.prompts import FewShotPromptTemplate
 load_dotenv()
 key= os.getenv("OPENAI_API_KEY")
 
@@ -66,10 +66,18 @@ if "df" in st.session_state:
                 st.write(f"**Q:** {ex['input']}")
                 st.code(ex['output'], language="python")
 
+        few_shot_prompt = FewShotPromptTemplate(
+            example_selector=main_agent.example_selector,
+            input_variables=["user_input"],
+            example_prompt={"Question": "{input}\nAnswer: {output}"},
+            
+        )
+
+        prompt = few_shot_prompt.format(user_input=user_input)
+
         messages = [
             SystemMessage(system_prompt),
-            *[HumanMessage(e['input']) for e in relevant_few_shots],
-            HumanMessage(user_input)
+            HumanMessage(prompt)
         ]
         try:
             # Create the initial state for LangGraph
