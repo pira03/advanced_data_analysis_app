@@ -9,7 +9,7 @@ import os
 import io
 import sys
 import pandas as pd
-
+import math
 
 load_dotenv()
 key= os.getenv("OPENAI_API_KEY")
@@ -62,7 +62,12 @@ if "df" in st.session_state:
         st.code(generated_code, language="python")
 
         # Safe execution namespace
-        exec_namespace = {"df": st.session_state.get("df", None)}
+        exec_namespace = {"df": st.session_state.get("df", None),
+                          "salinity_calculator": salinity_calculator,
+                          "processed_mode": processed_mode,
+                          "pd": pd,
+                          "math": math
+                          }
 
         output_buffer = io.StringIO()
         sys_stdout = sys.stdout
