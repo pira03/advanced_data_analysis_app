@@ -74,12 +74,12 @@ if "df" in st.session_state:
         few_shot_prompt = FewShotPromptTemplate(
             example_selector=main_agent.example_selector,
             example_prompt=example_prompt,
-            input_variables=["user_input"],
+            input_variables=["input"],
             prefix="Here are some examples of similar questions and their answers:",
-            suffix="Question: {user_input}\nAnswer:"
+            suffix="Question: {input}\nAnswer:"
         )
 
-        prompt = few_shot_prompt.format(user_input=user_input)
+        prompt = few_shot_prompt.format(input=user_input)
 
         messages = [
             SystemMessage(system_prompt),
