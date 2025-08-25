@@ -14,6 +14,12 @@ import operator
 from langchain_core.messages import AnyMessage, SystemMessage, ToolMessage, HumanMessage
 import json
 import uuid
+from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain.prompts.example_selector import SemanticSimilarityExampleSelector
+from langchain_core.prompts import FewShotPromptTemplate
+from langchain.docstore.document import Document   
+from prompt import few_shots
 
 
 # load_dotenv()
@@ -105,6 +111,23 @@ class MainAgent:
         self.system_prompt = system_prompt
         self.debug = debug
 
+        self.embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+
+        # build vectorstore and example selector
+        documents = []
+    
+        for example in few_shots:
+            # Create a document with the combined text
+            text = f"{example['input']} {example['output']}"
+            doc = Document(page_content=text, metadata=example)
+            documents.append(doc)
+            
+        self.vectorstore = Chroma.from_documents(documents, embedding=self.embeddings)
+        self.example_selector = SemanticSimilarityExampleSelector.from_examples(
+            vectorstore=self.vectorstore,
+            k=3
+        )
+
         # build state graph
         graph_agent = StateGraph(AgentState)
         graph_agent.add_node("agent", self.call_agent)
@@ -116,6 +139,7 @@ class MainAgent:
         )
         graph_agent.add_edge("tools", "agent")
         graph_agent.set_entry_point("agent")
+
 
         self.memory = MemorySaver()
         self.graph_agent = graph_agent.compile(checkpointer=self.memory)

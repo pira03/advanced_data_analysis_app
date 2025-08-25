@@ -57,8 +57,14 @@ if "df" in st.session_state:
 
     if st.button("Run") and user_input.strip():
         config = {"configurable": {"thread_id": str(uuid.uuid4())}}
-        user_message = {"messages": [HumanMessage(user_input)]}
-        ai_response = main_agent.graph_agent.invoke(user_message, config=config)
+        relevant_few_shots = main_agent.example_selector.select_examples({"input": user_input})
+        messages = [
+            SystemMessage(system_prompt),
+            *[HumanMessage(e['input']) for e in relevant_few_shots],
+            HumanMessage(user_input)
+        ]
+
+        ai_response = main_agent.graph_agent.invoke({"messages": messages})
         generated_code = ai_response['messages'][-1].content
         st.code(generated_code, language="python")
 
