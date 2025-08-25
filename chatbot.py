@@ -25,7 +25,32 @@ import uuid
 
 @tool
 def salinity_calculator(conductivity: float) -> float:
-    """Calculate salinity from a single conductivity value."""
+    """
+    Calculate the brine salinity from a single conductivity measurement.
+
+    This function estimates the salinity of a solution (e.g., feed water or concentrate)
+    based on its electrical conductivity, which is commonly measured in µS/cm in this dataset. 
+    Different exponential formulas are applied depending on whether the conductivity exceeds 
+    a threshold of 7630 µS/cm.
+
+    Parameters
+    ----------
+    conductivity : float
+        Electrical conductivity of the solution (µS/cm).  
+        Typically sourced from columns like 'conc_conductivity', 'perm_conductivity', or 'feed_conductivity'.
+
+    Returns
+    -------
+    float
+        Estimated brine salinity corresponding to the given conductivity value.
+
+    Notes
+    -----
+    - For conductivity > 7630 µS/cm, a high-conductivity model is applied.
+    - For conductivity <= 7630 µS/cm, a low-conductivity model is applied.
+    - Non-numeric or missing values should be handled before calling this function.
+    - Designed to work with individual float values (not pandas Series).
+    """
     if conductivity > 7630:
         return 8.01e-11 * math.exp(((-50.6458 - math.log(conductivity)) ** 2) / 112.484)
     else:
@@ -34,13 +59,39 @@ def salinity_calculator(conductivity: float) -> float:
 
 @tool
 def processed_mode(mode: int) -> str:
-    """Map a numeric mode code to system state (produce, flush, offline)."""
+    """
+    Map a numeric system mode code to a human-readable operational state.
+
+    The dataset contains a 'mode' column representing system operation codes. 
+    This function converts these numeric codes into descriptive states:
+    'produce', 'flush', or 'offline'.
+
+    Parameters
+    ----------
+    mode : int
+        Numeric mode code from the 'mode' column in the dataset.
+
+    Returns
+    -------
+    str
+        Operational state corresponding to the code:
+        - "produce" for mode codes 401–406  
+        - "flush" for mode codes 431–465  
+        - "offline" for all other codes
+
+    Notes
+    -----
+    - Only integer values are valid; non-integer entries should be converted before calling.
+    - Useful for transforming the 'mode' column into human-readable state labels 
+      for analysis or visualization.
+    """
     if 401 <= mode <= 406:
         return "produce"
     elif 431 <= mode <= 465:
         return "flush"
     else:
         return "offline"
+
 
 
 
