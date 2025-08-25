@@ -72,7 +72,9 @@ if "df" in st.session_state:
             HumanMessage(user_input)
         ]
         try:
-            ai_response = main_agent.graph_agent.invoke(messages, config=config)
+            # Create the initial state for LangGraph
+            initial_state = {"messages": messages}
+            ai_response = main_agent.graph_agent.invoke(initial_state, config=config)
             generated_code = ai_response['messages'][-1].content
             st.code(generated_code, language="python")
 
