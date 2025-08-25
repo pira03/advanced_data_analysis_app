@@ -14,7 +14,7 @@ import operator
 from langchain_core.messages import AnyMessage, SystemMessage, ToolMessage, HumanMessage
 import json
 import uuid
-from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.prompts.example_selector import SemanticSimilarityExampleSelector
 from langchain_core.prompts import FewShotPromptTemplate
@@ -121,8 +121,8 @@ class MainAgent:
             text = f"{example['input']} {example['output']}"
             doc = Document(page_content=text, metadata=example)
             documents.append(doc)
-            
-        self.vectorstore = Chroma.from_documents(documents, embedding=self.embeddings)
+
+        self.vectorstore = FAISS.from_documents(documents, embedding=self.embeddings, persist_directory=None)
         self.example_selector = SemanticSimilarityExampleSelector.from_examples(
             vectorstore=self.vectorstore,
             k=3
