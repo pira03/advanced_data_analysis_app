@@ -11,7 +11,7 @@ import sys
 import pandas as pd
 import math
 import traceback
-from langchain_core.prompts import FewShotPromptTemplate
+from langchain_core.prompts import FewShotPromptTemplate, PromptTemplate
 load_dotenv()
 key= os.getenv("OPENAI_API_KEY")
 
@@ -66,11 +66,17 @@ if "df" in st.session_state:
                 st.write(f"**Q:** {ex['input']}")
                 st.code(ex['output'], language="python")
 
+        example_prompt = PromptTemplate(
+            input_variables=["input", "output"],
+            template="Question: {input}\nAnswer: {output}"
+        )
+        
         few_shot_prompt = FewShotPromptTemplate(
             example_selector=main_agent.example_selector,
+            example_prompt=example_prompt,
             input_variables=["user_input"],
-            example_prompt={"Question": "{input}\nAnswer: {output}"},
-            
+            prefix="Here are some examples of similar questions and their answers:",
+            suffix="Question: {user_input}\nAnswer:"
         )
 
         prompt = few_shot_prompt.format(user_input=user_input)
