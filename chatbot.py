@@ -110,7 +110,7 @@ class MainAgent:
         self.system_prompt = system_prompt
         self.debug = debug
 
-        self.embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        self.embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2", model_kwargs={"device": "cpu"})
 
         # build vectorstore and example selector
         documents = []
