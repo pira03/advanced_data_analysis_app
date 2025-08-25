@@ -10,6 +10,7 @@ import io
 import sys
 import pandas as pd
 import math
+import traceback
 
 load_dotenv()
 key= os.getenv("OPENAI_API_KEY")
@@ -73,7 +74,11 @@ if "df" in st.session_state:
         sys_stdout = sys.stdout
         sys.stdout = output_buffer
 
-        exec(generated_code, exec_namespace)
+        try:
+            exec(generated_code, exec_namespace)
+        except Exception as e:
+            st.error(f"❌ Error executing code: {str(e)}")
+            st.error(traceback.format_exc())
 
         # Restore stdout
         sys.stdout = sys_stdout
