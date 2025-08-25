@@ -122,10 +122,12 @@ class MainAgent:
             doc = Document(page_content=text, metadata=example)
             documents.append(doc)
 
-        self.vectorstore = FAISS.from_documents(documents, embedding=self.embeddings)
+        #self.vectorstore = FAISS.from_documents(documents, embedding=self.embeddings)
         self.example_selector = SemanticSimilarityExampleSelector.from_examples(
-            vectorstore=self.vectorstore,
-            k=3
+            examples=few_shots,           # your list of few-shot examples
+            embeddings=self.embeddings,
+            k=3,
+            vectorstore_cls=FAISS         # optional
         )
 
         # build state graph
