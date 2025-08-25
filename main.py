@@ -15,7 +15,7 @@ load_dotenv()
 key= os.getenv("OPENAI_API_KEY")
 
 # Initialize GPT-5 Nano
-llm = ChatOpenAI(openai_api_key=key, model_name="gpt-5-mini", temperature=1 )
+llm = ChatOpenAI(openai_api_key=key, model_name="gpt-5-mini", temperature=0.2 )
 
 
 main_agent = MainAgent(
