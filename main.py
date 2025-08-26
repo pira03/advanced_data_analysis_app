@@ -26,7 +26,7 @@ main_agent = MainAgent(
     system_prompt,
     debug=True
     )
-st.title("Plant Data Analysis")
+st.title("Plant Time Series Data Analysis")
 
 st.write("This is a simple app to analyze plant data.")
 
@@ -35,7 +35,7 @@ st.write("""Please make sure your csv file has the following columns:
 - mode: if is float, ask agent to convert it to a integer.
 """)
 
-# 2️⃣ File upload section
+
 st.header("📁 Upload Your CSV File")
 uploaded_file = st.file_uploader("Choose a CSV file", type=['csv'])
 
@@ -65,7 +65,7 @@ if "df" in st.session_state:
         config = {"configurable": {"thread_id": str(uuid.uuid4())}}
         relevant_few_shots = main_agent.example_selector.select_examples({"input": user_input})
 
-            # 📌 Show retrieved examples before running the LLM
+            # Show retrieved examples before running the LLM
         if relevant_few_shots:
             st.subheader("Retrieved Few-Shot Examples")
             for ex in relevant_few_shots:
@@ -151,9 +151,9 @@ if "df" in st.session_state:
             st.text(traceback.format_exc())
 
 
-if "df" in st.session_state and st.button("Save CSV"):
-    message = save_csv(st.session_state.df)
-    st.success(message)
+if "df" in st.session_state and st.button("Save as CSV"):
+    csv = st.session_state.df.to_csv(index=False).encode("utf-8")
+    st.download_button(label="Download CSV", data=csv, file_name="data.csv", mime="text/csv")
 
 
 

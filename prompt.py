@@ -131,6 +131,18 @@ few_shots = [
         "output": "fig = px.line(df, x='t_stamp', y='efficiency')\nfig"
     },
     {
+        "input": "calculate col_salinity from col_conductivity",
+        "output": """def salinity_from_conductivity(conductivity):
+    return np.where(
+        conductivity > 7630,
+        8.01E-11 * np.exp(((-50.6458 - np.log(conductivity)) ** 2) / 112.484),
+        7.70E-20 * np.exp(((-90.4756 - np.log(conductivity)) ** 2) / 188.8844)
+    )
+
+df["col_salinity"] = salinity_from_conductivity(df["col_conductivity"])
+df"""
+    },
+    {
         "input": "calculate permeate salinity from perm conductivity",
         "output": """def salinity_from_conductivity(conductivity):
     return np.where(
