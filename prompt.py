@@ -151,7 +151,7 @@ df"""
         7.70E-20 * np.exp(((-90.4756 - np.log(conductivity)) ** 2) / 188.8844)
     )
 
-df["raw_salinity"] = salinity_from_conductivity(df["feed_conductivity"])
+df["raw_salinity"] = salinity_from_conductivity(df["raw_conductivity"])
 df"""
     },
     {
@@ -275,5 +275,27 @@ start_time = df['t_stamp'].min()
 df = df.reset_index(drop=True)
 df['t_stamp'] = [start_time + pd.Timedelta(minutes=1*i) for i in range(len(df))]
 """
-    }
+    },
+    {
+        "input": "remove rows where 'col_name' is nan",
+        "output": """
+df = df.dropna(subset=['col_name'])
+"""
+    }, 
+    {
+        "input": "remove rows where 'col_name' == 'value'",
+        "output": """
+df = df[df['col_name'] != 'value']
+"""
+    },
+    {
+        "input": "create a state column from mode column",
+        "output": "call the tool processed_mode"
+    },
+    {
+        "input": "create a state column from mode column",
+        "output": "call the tool processed_mode"
+    },
+    
+    
 ]

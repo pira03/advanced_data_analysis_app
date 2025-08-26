@@ -30,6 +30,11 @@ st.title("Plant Data Analysis")
 
 st.write("This is a simple app to analyze plant data.")
 
+st.write("""Please make sure your csv file has the following columns:
+- time_stamp: should be a datetime style, the app will automatically convert it to the correct format.
+- mode: if is float, ask agent to convert it to a integer.
+""")
+
 # 2️⃣ File upload section
 st.header("📁 Upload Your CSV File")
 uploaded_file = st.file_uploader("Choose a CSV file", type=['csv'])
@@ -47,11 +52,11 @@ if uploaded_file is not None and "df" not in st.session_state:
         st.session_state.df = df
         
         
-        st.success(f"✅ CSV loaded successfully! Shape: {df.shape}")
+        st.success(f"CSV loaded successfully! Shape: {df.shape}")
         st.dataframe(df.head())
         
     except Exception as e:
-        st.error(f"❌ Error loading CSV: {str(e)}")
+        st.error(f"Error loading CSV: {str(e)}")
 if "df" in st.session_state:
     st.header("🤖 Ask Questions About Your Data")
     user_input = st.text_input("Enter your command or question:")
@@ -62,7 +67,7 @@ if "df" in st.session_state:
 
             # 📌 Show retrieved examples before running the LLM
         if relevant_few_shots:
-            st.subheader("📌 Retrieved Few-Shot Examples")
+            st.subheader("Retrieved Few-Shot Examples")
             for ex in relevant_few_shots:
                 st.write(f"**Q:** {ex['input']}")
                 st.code(ex['output'], language="python")
@@ -108,7 +113,7 @@ if "df" in st.session_state:
             try:
                 exec(generated_code, exec_namespace)
             except Exception as e:
-                st.error(f"❌ Error executing code: {str(e)}")
+                st.error(f"Error executing code: {str(e)}")
                 st.error(traceback.format_exc())
 
             # Restore stdout
@@ -140,10 +145,15 @@ if "df" in st.session_state:
 
         except Exception as e:
             sys.stdout = sys.__stdout__  # Restore stdout in case of error
-            st.error("❌ Error during agent execution!")
+            st.error("Error during agent execution!")
             st.error(f"**Exception:** {str(e)}")
             st.error("**Traceback:**")
             st.text(traceback.format_exc())
+
+
+if "df" in st.session_state and st.button("Save CSV"):
+    message = save_csv(st.session_state.df)
+    st.success(message)
 
 
 
