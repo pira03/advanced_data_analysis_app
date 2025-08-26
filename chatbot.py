@@ -15,9 +15,10 @@ from langchain_core.messages import AnyMessage, SystemMessage, ToolMessage, Huma
 import json
 import uuid
 from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.prompts.example_selector import SemanticSimilarityExampleSelector
-from langchain.docstore.document import Document   
+from langchain.docstore.document import Document  
+from langchain_openai import OpenAI
+from langchain.embeddings.openai import OpenAIEmbeddings 
 from prompt import few_shots
 
 
@@ -110,7 +111,7 @@ class MainAgent:
         self.system_prompt = system_prompt
         self.debug = debug
 
-        self.embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2", model_kwargs={"device": "cpu"})
+        self.embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
 
         # build vectorstore and example selector
         documents = []
@@ -121,7 +122,7 @@ class MainAgent:
             doc = Document(page_content=text, metadata=example)
             documents.append(doc)
 
-        #self.vectorstore = FAISS.from_documents(documents, embedding=self.embeddings)
+        self.vectorstore = FAISS.from_documents(documents, embedding=self.embeddings)
         self.example_selector = SemanticSimilarityExampleSelector.from_examples(
             examples=few_shots,           # your list of few-shot examples
             embeddings=self.embeddings,
