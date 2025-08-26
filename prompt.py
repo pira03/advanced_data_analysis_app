@@ -308,6 +308,64 @@ df = df[df['col_name'] != 'value']
         "input": "create a state column from mode column",
         "output": "call the tool processed_mode"
     },
+    {
+        "input": "calculate average duration of each state in state column",
+        "output": """def calculate_duration_per_state(df, state_column):
+    df = df.copy()
+    # Step 1: Sort and group based on consecutive 'state' values
+    df["state_group"] = (df[state_column] != df[state_column].shift()).cumsum()
+
+    # Step 2: Aggregate each continuous state segment
+    state_segments = (
+        df.groupby("state_group")
+        .agg(
+            state=(state_column, "first"),
+            start_time=("t_stamp", "first"),
+            end_time=("t_stamp", "last")
+        )
+    )
+
+    # Step 3: Calculate duration of each segment
+    state_segments["duration_sec"] = (
+        (state_segments["end_time"] - state_segments["start_time"]).dt.total_seconds()
+    )
+
+    # Step 4: Compute average duration per state
+    avg_duration_per_state = (
+        state_segments.groupby("state")["duration_sec"].mean().reset_index()
+    )
+
+    print(avg_duration_per_state)"""
+    },
+    {
+        "input": "calculate average duration of each category in col_name",
+        "output": """def calculate_duration_per_category(df, col_name):
+    df = df.copy()
+    # Step 1: Sort and group based on consecutive values in the column
+    df["group_id"] = (df[col_name] != df[col_name].shift()).cumsum()
+
+    # Step 2: Aggregate each continuous segment
+    segments = (
+        df.groupby("group_id")
+        .agg(
+            category=(col_name, "first"),
+            start_time=("t_stamp", "first"),
+            end_time=("t_stamp", "last")
+        )
+    )
+
+    # Step 3: Calculate duration of each segment
+    segments["duration_sec"] = (
+        (segments["end_time"] - segments["start_time"]).dt.total_seconds()
+    )
+
+    # Step 4: Compute average duration per category
+    avg_duration_per_category = (
+        segments.groupby("category")["duration_sec"].mean().reset_index()
+    )
+
+    print(avg_duration_per_category)"""
+    }
     
     
 ]

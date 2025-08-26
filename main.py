@@ -36,7 +36,7 @@ st.write("""Please make sure your csv file has the following columns:
 """)
 
 
-st.header("📁 Upload Your CSV File")
+st.header("Upload Your CSV File")
 uploaded_file = st.file_uploader("Choose a CSV file", type=['csv'])
 
 # Load CSV from uploaded file
@@ -58,7 +58,7 @@ if uploaded_file is not None and "df" not in st.session_state:
     except Exception as e:
         st.error(f"Error loading CSV: {str(e)}")
 if "df" in st.session_state:
-    st.header("🤖 Ask Questions About Your Data")
+    st.header("Ask Questions About Your Data")
     user_input = st.text_input("Enter your command or question:")
 
     if st.button("Run") and user_input.strip():
